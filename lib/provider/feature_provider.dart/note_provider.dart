@@ -4,7 +4,7 @@ import 'package:todo_list/models/note_model.dart';
 import 'package:todo_list/utils/toast_utils.dart';
 
 class NoteProvider with ChangeNotifier {
-  final _supabase = Supabase.instance.client.from('mynotes');
+  final _supabase = Supabase.instance.client.from('notes');
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
@@ -54,6 +54,7 @@ class NoteProvider with ChangeNotifier {
 
       print('trying to add data********************');
       await _supabase.insert({
+        'created_at': DateTime.now().toIso8601String(),
         'title': title.toString(),
         'description': description.toString(),
       });
@@ -117,6 +118,7 @@ class NoteProvider with ChangeNotifier {
           })
           .eq('id', noteId);
       print('note updated Successfully');
+      Navigator.pop(context);
       await getNotes(context);
     } catch (_e) {
       ToastUtil.showToast(

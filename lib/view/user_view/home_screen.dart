@@ -7,8 +7,6 @@ import 'package:provider/provider.dart';
 import 'package:todo_list/View/auth_view/login_in_Screen.dart';
 import 'package:todo_list/View/user_view/add_note_screen.dart';
 import 'package:todo_list/constant/app_colors.dart';
-import 'package:todo_list/models/note_model.dart';
-import 'package:todo_list/provider/feature_provider.dart/auth_provider.dart';
 import 'package:todo_list/provider/feature_provider.dart/note_provider.dart';
 
 class HomeScreen extends StatefulWidget {

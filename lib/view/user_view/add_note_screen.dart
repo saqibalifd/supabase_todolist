@@ -48,12 +48,15 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Create Note',
+              widget.edit == false || widget.edit == null
+                  ? 'Create Note'
+                  : 'Edit Note',
               style: TextStyle(
                 color: AppColors.buttonBackGround,
                 fontSize: 29.sp,
               ),
             ),
+            SizedBox(height: 30.h),
             CustomFieldWidget(text: 'Title', controller: titleControler),
             SizedBox(height: 10.h),
             CustomFieldWidget(
@@ -64,10 +67,12 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
             SizedBox(height: 30.h),
             Consumer<NoteProvider>(
               builder: (context, provider, child) => MainButtonWidget(
-                text: widget.edit == false ? 'Add' : 'Edit',
+                text: widget.edit == false || widget.edit == null
+                    ? 'Add'
+                    : 'Edit',
                 isLoading: provider.isLoading,
                 ontap: () {
-                  widget.edit == false
+                  widget.edit == false || widget.edit == null
                       ? noteProvider.addNote(
                           context,
                           titleControler.text.toString(),
