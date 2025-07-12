@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:provider/provider.dart';
 import 'package:todo_list/constant/app_colors.dart';
 import 'package:todo_list/provider/feature_provider.dart/note_provider.dart';

@@ -20,14 +20,13 @@ class NoteProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      print('trying to fetch data');
-      final stream = _supabase.stream(primaryKey: ['id']);
+      String userId = Supabase.instance.client.auth.currentUser!.id;
+      final stream = _supabase.stream(primaryKey: ['id']).eq('userId', userId);
       stream.listen((data) {
         noteList.clear();
         noteList.addAll(
           data.map((noteMap) => NoteModel.fromMap(noteMap)).toList(),
         );
-        print('Data is successfully fetched');
         notifyListeners();
       });
     } catch (e) {
@@ -53,10 +52,13 @@ class NoteProvider with ChangeNotifier {
       notifyListeners();
 
       print('trying to add data********************');
+      String userId = Supabase.instance.client.auth.currentUser!.id.toString();
+      print('user id is ${userId}');
       await _supabase.insert({
         'created_at': DateTime.now().toIso8601String(),
         'title': title.toString(),
         'description': description.toString(),
+        'userId': userId.toString(),
       });
       print('data is added********************');
       Navigator.pop(context);

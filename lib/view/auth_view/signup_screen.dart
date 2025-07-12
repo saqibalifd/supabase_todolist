@@ -20,6 +20,7 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
     TextEditingController emailControler = TextEditingController();
     TextEditingController nameControler = TextEditingController();
     TextEditingController passwordControler = TextEditingController();
@@ -31,86 +32,121 @@ class _SignupScreenState extends State<SignupScreen> {
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Column(
-              spacing: 10.h,
-              children: [
-                /// first sized box
-                Text(
-                  'Welcome onboard!',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                ),
-
-                /// second sized box
-                Text(
-                  'Let’s help you meet your tasks',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w300),
-                ),
-
-                CustomFieldWidget(
-                  text: 'Enter your full name ',
-
-                  controller: nameControler,
-                ),
-
-                /// sized box
-                SizedBox(height: 20.h),
-                CustomFieldWidget(
-                  text: 'Enter your email ',
-
-                  controller: emailControler,
-                ),
-
-                /// sized box
-                SizedBox(height: 20.h),
-                CustomFieldWidget(
-                  text: 'Enter password ',
-
-                  controller: passwordControler,
-                ),
-
-                /// sized box
-                SizedBox(height: 20.h),
-                CustomFieldWidget(
-                  text: 'Confrom password',
-
-                  controller: ConfromControler,
-                ),
-                // sized box
-                SizedBox(height: 10.h),
-                Consumer<AuthProvider>(
-                  builder: (context, provider, child) => MainButtonWidget(
-                    text: "Register",
-
-                    ontap: () async {
-                      String email = emailControler.text.toString();
-                      var password = passwordControler.text.toString();
-                      String name = nameControler.text.trim();
-                      provider.signUp(context, email, password, name);
-                    },
+            child: Form(
+              key: _formKey,
+              child: Column(
+                spacing: 10.h,
+                children: [
+                  /// first sized box
+                  Text(
+                    'Welcome onboard!',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                   ),
-                ),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Already have an account ?'),
-                    SizedBox(width: 5),
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
-                      ),
-                      child: Text(
-                        'Sign In',
-                        style: TextStyle(
-                          color: AppColors.buttonBackGround,
-                          fontWeight: FontWeight.bold,
+                  /// second sized box
+                  Text(
+                    'Let’s help you meet your tasks',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w300),
+                  ),
+
+                  CustomFieldWidget(
+                    text: 'Enter your full name ',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Name is required';
+                      }
+                      return null;
+                    },
+
+                    controller: nameControler,
+                  ),
+
+                  /// sized box
+                  SizedBox(height: 20.h),
+                  CustomFieldWidget(
+                    text: 'Enter your email ',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Email is required';
+                      }
+                      if (!value.contains('@')) {
+                        return 'Enter a valid email';
+                      }
+                      return null;
+                    },
+
+                    controller: emailControler,
+                  ),
+
+                  /// sized box
+                  SizedBox(height: 20.h),
+                  CustomFieldWidget(
+                    text: 'Enter password ',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Password is required';
+                      }
+                      if (value.length < 6) {
+                        return 'Password must be minimum 6 char';
+                      }
+                      return null;
+                    },
+
+                    controller: passwordControler,
+                  ),
+
+                  /// sized box
+                  SizedBox(height: 20.h),
+                  CustomFieldWidget(
+                    text: 'Confrom password',
+
+                    controller: ConfromControler,
+                  ),
+                  // sized box
+                  SizedBox(height: 10.h),
+                  Consumer<AuthProvider>(
+                    builder: (context, provider, child) => MainButtonWidget(
+                      text: "Register",
+                      isLoading: provider.isLoading,
+                      ontap: () async {
+                        if (_formKey.currentState!.validate()) {
+                          print('button is pressed');
+                          provider.signUp(
+                            context,
+                            nameControler.text.toString(),
+                            emailControler.text.toString(),
+                            passwordControler.text.toString(),
+                            ConfromControler.text.toString(),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Already have an account ?'),
+                      SizedBox(width: 5),
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginScreen(),
+                          ),
+                        ),
+                        child: Text(
+                          'Sign In',
+                          style: TextStyle(
+                            color: AppColors.buttonBackGround,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

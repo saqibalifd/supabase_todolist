@@ -17,32 +17,53 @@ class AuthProvider with ChangeNotifier {
 
   Future<AuthResponse?> signUp(
     BuildContext context,
+    String name,
     String email,
     String password,
-    String name,
+    String reEnterPassword,
   ) async {
-    _setLoading(true);
-    try {
-      final response = await _supabase.auth.signUp(
-        email: email,
-        password: password,
-        data: {'name': name},
-      );
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
-      return response;
-    } catch (e) {
-      debugPrint("Sign up error: $e");
+    if (password != reEnterPassword) {
       ToastUtil.showToast(
         context,
-        message: e.toString(),
-        type: ToastType.error,
+        message: 'Password does not match',
+        type: ToastType.warning,
       );
-      return null;
-    } finally {
-      _setLoading(false);
+    } else {
+      try {
+        _setLoading(true);
+        final response = await _supabase.auth.signUp(
+          email: email,
+          password: password,
+          data: {'name': name},
+        );
+
+        var userId = Supabase.instance.client.auth.currentUser!.id.toString();
+
+        userId = Supabase.instance.client.auth.currentUser!.id;
+        await Supabase.instance.client.from('users').insert({
+          'created_at': DateTime.now().toIso8601String(),
+          'name': name.toString(),
+          'email': email.toString(),
+          'image': '',
+          'userId': userId.toString(),
+        });
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+        return response;
+      } catch (e) {
+        debugPrint("Sign up error: $e");
+        ToastUtil.showToast(
+          context,
+          message: e.toString(),
+          type: ToastType.error,
+        );
+        return null;
+      } finally {
+        _setLoading(false);
+      }
     }
   }
 
